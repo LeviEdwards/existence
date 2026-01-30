@@ -46,14 +46,20 @@ body {
 /* ========== LAYOUT ========== */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .container {
-    padding: 0 40px;
+    padding: 0 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 48px;
   }
 }
 
@@ -61,14 +67,20 @@ body {
 .card {
   background: var(--card);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 28px;
+  border-radius: 24px;
+  padding: 32px;
   transition: all 0.25s ease;
 }
 
 @media (min-width: 768px) {
   .card {
-    padding: 36px;
+    padding: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 48px;
   }
 }
 

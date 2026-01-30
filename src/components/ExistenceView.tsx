@@ -63,7 +63,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
 
   return (
     <div className="min-h-screen py-12 md:py-20">
-      <div className="container space-y-10">
+      <div className="container space-y-8 md:space-y-12">
         
         {/* ===== HEADER ===== */}
         <header className="flex items-start justify-between animate" style={{ animationDelay: '0ms' }}>
@@ -94,7 +94,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
         </section>
 
         {/* ===== 3-COLUMN STATS ===== */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-5 animate" style={{ animationDelay: '100ms' }}>
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 animate" style={{ animationDelay: '100ms' }}>
           <div className="card">
             <div className="icon-box">
               <Calendar className="w-5 h-5" />
@@ -135,7 +135,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
         </section>
 
         {/* ===== 2-COLUMN: BODY + WORLD ===== */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           
           {/* Body */}
           <div className="card animate" style={{ animationDelay: '200ms' }}>
