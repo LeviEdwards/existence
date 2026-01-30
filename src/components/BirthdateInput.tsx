@@ -12,6 +12,7 @@ export function BirthdateInput({ onSubmit }: Props) {
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
   const [error, setError] = useState('');
+  const [focused, setFocused] = useState<string | null>(null);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,94 +30,172 @@ export function BirthdateInput({ onSubmit }: Props) {
     onSubmit(date);
   };
 
+  const inputStyle = (field: string): React.CSSProperties => ({
+    width: '100%',
+    background: focused === field ? 'rgba(217, 119, 6, 0.08)' : '#141414',
+    border: focused === field ? '2px solid #D97706' : '2px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '16px',
+    padding: '24px 16px',
+    textAlign: 'center',
+    fontFamily: 'Plus Jakarta Sans, sans-serif',
+    fontSize: '32px',
+    fontWeight: 700,
+    color: '#FAFAFA',
+    outline: 'none',
+    transition: 'all 0.2s ease',
+    boxShadow: focused === field ? '0 0 20px rgba(217, 119, 6, 0.2)' : 'none',
+  });
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#A8A29E',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '16px',
+  };
+
   return (
-    <div className="min-h-screen grid-pattern flex items-center justify-center px-6 py-16">
-      <div className="w-full max-w-lg space-y-12">
+    <div className="min-h-screen grid-pattern flex items-center justify-center" style={{ padding: '48px 24px' }}>
+      <div style={{ width: '100%', maxWidth: '520px' }}>
         
         {/* Header */}
-        <div className="text-center animate-fadeInUp" style={{ animationDelay: '0ms' }}>
-          <h1 className="font-display text-5xl md:text-7xl font-extrabold gradient-text glow-text">
+        <div className="text-center animate-fadeInUp" style={{ marginBottom: '56px' }}>
+          <h1 className="font-display gradient-text glow-text" style={{ fontSize: 'clamp(48px, 12vw, 80px)', fontWeight: 800, lineHeight: 1 }}>
             EXISTENCE
           </h1>
-          <p className="text-[var(--neutral-400)] mt-6 text-xl">
+          <p style={{ color: '#78716C', marginTop: '24px', fontSize: '20px' }}>
             Your life, quantified
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="glass-card-featured animate-fadeInUp" style={{ animationDelay: '150ms', padding: '48px' }}>
-          <div className="flex items-center gap-5 mb-10">
-            <div className="w-14 h-14 rounded-2xl bg-[rgba(217,119,6,0.15)] flex items-center justify-center">
-              <Calendar className="w-7 h-7 text-[var(--primary)]" />
+        <div 
+          className="animate-fadeInUp" 
+          style={{ 
+            animationDelay: '150ms',
+            background: 'rgba(217, 119, 6, 0.04)',
+            border: '1px solid rgba(217, 119, 6, 0.25)',
+            borderRadius: '28px',
+            padding: '48px',
+            boxShadow: '0 0 60px rgba(217, 119, 6, 0.1)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
+            <div style={{ 
+              width: '60px', 
+              height: '60px', 
+              borderRadius: '16px', 
+              background: 'rgba(217, 119, 6, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Calendar style={{ width: '28px', height: '28px', color: '#D97706' }} />
             </div>
-            <h2 className="font-display font-bold text-2xl">When were you born?</h2>
+            <h2 style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700, fontSize: '24px', color: '#FAFAFA' }}>
+              When were you born?
+            </h2>
           </div>
 
-          <form onSubmit={submit} className="space-y-8">
-            <div className="grid grid-cols-3 gap-5">
+          <form onSubmit={submit}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '32px' }}>
               <div>
-                <label className="block text-sm font-semibold text-[var(--neutral-400)] uppercase tracking-wider mb-4">
-                  Month
-                </label>
+                <label style={labelStyle}>Month</label>
                 <input
                   type="number"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
+                  onFocus={() => setFocused('month')}
+                  onBlur={() => setFocused(null)}
                   placeholder="MM"
                   min="1"
                   max="12"
-                  className="w-full bg-[var(--dark-100)] border-2 border-[rgba(255,255,255,0.08)] rounded-2xl px-6 py-5 text-center font-display text-2xl font-bold text-white placeholder:text-[var(--neutral-700)] focus:outline-none focus:border-[var(--primary)] focus:bg-[rgba(217,119,6,0.05)] transition-all"
+                  style={inputStyle('month')}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[var(--neutral-400)] uppercase tracking-wider mb-4">
-                  Day
-                </label>
+                <label style={labelStyle}>Day</label>
                 <input
                   type="number"
                   value={day}
                   onChange={(e) => setDay(e.target.value)}
+                  onFocus={() => setFocused('day')}
+                  onBlur={() => setFocused(null)}
                   placeholder="DD"
                   min="1"
                   max="31"
-                  className="w-full bg-[var(--dark-100)] border-2 border-[rgba(255,255,255,0.08)] rounded-2xl px-6 py-5 text-center font-display text-2xl font-bold text-white placeholder:text-[var(--neutral-700)] focus:outline-none focus:border-[var(--primary)] focus:bg-[rgba(217,119,6,0.05)] transition-all"
+                  style={inputStyle('day')}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[var(--neutral-400)] uppercase tracking-wider mb-4">
-                  Year
-                </label>
+                <label style={labelStyle}>Year</label>
                 <input
                   type="number"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
+                  onFocus={() => setFocused('year')}
+                  onBlur={() => setFocused(null)}
                   placeholder="YYYY"
                   min="1900"
                   max={new Date().getFullYear()}
-                  className="w-full bg-[var(--dark-100)] border-2 border-[rgba(255,255,255,0.08)] rounded-2xl px-6 py-5 text-center font-display text-2xl font-bold text-white placeholder:text-[var(--neutral-700)] focus:outline-none focus:border-[var(--primary)] focus:bg-[rgba(217,119,6,0.05)] transition-all"
+                  style={inputStyle('year')}
                 />
               </div>
             </div>
 
             {error && (
-              <div className="text-red-400 text-base text-center bg-red-500/10 border border-red-500/20 rounded-2xl py-4 px-6">
+              <div style={{
+                color: '#F87171',
+                fontSize: '15px',
+                textAlign: 'center',
+                background: 'rgba(248, 113, 113, 0.1)',
+                border: '1px solid rgba(248, 113, 113, 0.2)',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '24px',
+              }}>
                 {error}
               </div>
             )}
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[var(--primary)] to-[var(--primary-400)] hover:from-[var(--primary-400)] hover:to-[var(--primary-300)] text-white font-display font-bold text-xl py-5 rounded-2xl transition-all glow-md hover:glow-lg flex items-center justify-center gap-4 group mt-4"
-              style={{ boxShadow: '0 0 40px rgba(217, 119, 6, 0.3)' }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+                color: '#030303',
+                fontFamily: 'Plus Jakarta Sans',
+                fontWeight: 700,
+                fontSize: '18px',
+                padding: '20px 32px',
+                borderRadius: '16px',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                boxShadow: '0 0 40px rgba(217, 119, 6, 0.4)',
+                transition: 'all 0.2s ease',
+                marginTop: '8px',
+              }}
             >
               <span>Continue</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight style={{ width: '20px', height: '20px' }} />
             </button>
           </form>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-[var(--neutral-600)] text-sm animate-fadeInUp" style={{ animationDelay: '300ms' }}>
+        <p className="animate-fadeInUp" style={{ 
+          textAlign: 'center', 
+          color: '#57534E', 
+          fontSize: '14px', 
+          marginTop: '32px',
+          animationDelay: '300ms',
+        }}>
           Your data never leaves your device
         </p>
       </div>
