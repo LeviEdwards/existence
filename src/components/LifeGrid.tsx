@@ -3,48 +3,42 @@
 import { useMemo } from 'react';
 
 interface Props {
-  weeksLived: number;
-  totalWeeks: number;
+  weeks: number;
+  total: number;
 }
 
-export function LifeGrid({ weeksLived, totalWeeks }: Props) {
-  const WEEKS_PER_YEAR = 52;
-  
+export function LifeGrid({ weeks, total }: Props) {
   const rows = useMemo(() => {
-    const years = Math.ceil(totalWeeks / WEEKS_PER_YEAR);
     const result = [];
+    const years = Math.ceil(total / 52);
     
     for (let y = 0; y < years; y++) {
-      const weeks = [];
-      for (let w = 0; w < WEEKS_PER_YEAR; w++) {
-        const num = y * WEEKS_PER_YEAR + w;
-        if (num < totalWeeks) weeks.push(num);
+      const w = [];
+      for (let i = 0; i < 52; i++) {
+        const n = y * 52 + i;
+        if (n < total) w.push(n);
       }
-      result.push({ year: y, weeks });
+      result.push({ year: y, weeks: w });
     }
     return result;
-  }, [totalWeeks]);
+  }, [total]);
 
-  const weekClass = (n: number) => {
-    if (n < weeksLived) return 'week week-lived';
-    if (n === weeksLived) return 'week week-now';
+  const cls = (n: number) => {
+    if (n < weeks) return 'week week-past';
+    if (n === weeks) return 'week week-now';
     return 'week week-future';
   };
 
   return (
-    <div className="life-grid-container">
-      {rows.map(({ year, weeks }) => (
-        <div key={year} className="life-grid-row">
-          <div className="life-grid-label">
+    <div className="grid-container">
+      {rows.map(({ year, weeks: w }) => (
+        <div key={year} className="grid-row">
+          <div className="grid-label">
             {year % 10 === 0 ? year : ''}
           </div>
-          <div className="life-grid-weeks">
-            {weeks.map((w) => (
-              <div
-                key={w}
-                className={weekClass(w)}
-                title={`Week ${w + 1} · Age ${Math.floor(w / 52)}`}
-              />
+          <div className="grid-weeks">
+            {w.map((n) => (
+              <div key={n} className={cls(n)} title={`Week ${n + 1} · Age ${Math.floor(n / 52)}`} />
             ))}
           </div>
         </div>
