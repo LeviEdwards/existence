@@ -13,13 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <div className="gradient-mesh" />
-        <div className="noise-overlay" />
-        <div className="relative z-10">
-          {children}
-        </div>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
