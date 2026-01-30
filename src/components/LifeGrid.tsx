@@ -2,57 +2,53 @@
 
 import { useMemo } from 'react';
 
-interface LifeGridProps {
+interface Props {
   weeksLived: number;
   totalWeeks: number;
 }
 
-export function LifeGrid({ weeksLived, totalWeeks }: LifeGridProps) {
+export function LifeGrid({ weeksLived, totalWeeks }: Props) {
   const WEEKS_PER_YEAR = 52;
   
-  const years = useMemo(() => {
+  const rows = useMemo(() => {
+    const years = Math.ceil(totalWeeks / WEEKS_PER_YEAR);
     const result = [];
-    const totalYears = Math.ceil(totalWeeks / WEEKS_PER_YEAR);
     
-    for (let year = 0; year < totalYears; year++) {
+    for (let y = 0; y < years; y++) {
       const weeks = [];
-      for (let week = 0; week < WEEKS_PER_YEAR; week++) {
-        const weekNum = year * WEEKS_PER_YEAR + week;
-        if (weekNum < totalWeeks) {
-          weeks.push(weekNum);
-        }
+      for (let w = 0; w < WEEKS_PER_YEAR; w++) {
+        const num = y * WEEKS_PER_YEAR + w;
+        if (num < totalWeeks) weeks.push(num);
       }
-      result.push({ year, weeks });
+      result.push({ year: y, weeks });
     }
     return result;
   }, [totalWeeks]);
 
-  const getClass = (week: number) => {
-    if (week < weeksLived) return 'week-lived';
-    if (week === weeksLived) return 'week-current';
-    return 'week-future';
+  const weekClass = (n: number) => {
+    if (n < weeksLived) return 'week week-lived';
+    if (n === weeksLived) return 'week week-now';
+    return 'week week-future';
   };
 
   return (
-    <div className="overflow-x-auto">
-      <div className="inline-block min-w-fit">
-        {years.map(({ year, weeks }) => (
-          <div key={year} className="flex items-center gap-1 mb-1">
-            <div className="w-8 text-right pr-2 text-[10px] text-[var(--text-muted)] text-mono">
-              {year % 10 === 0 ? year : ''}
-            </div>
-            <div className="flex gap-[2px]">
-              {weeks.map((week) => (
-                <div
-                  key={week}
-                  className={`week-cell ${getClass(week)}`}
-                  title={`Week ${week + 1} · Age ${Math.floor(week / 52)}`}
-                />
-              ))}
-            </div>
+    <div className="life-grid-container">
+      {rows.map(({ year, weeks }) => (
+        <div key={year} className="life-grid-row">
+          <div className="life-grid-label">
+            {year % 10 === 0 ? year : ''}
           </div>
-        ))}
-      </div>
+          <div className="life-grid-weeks">
+            {weeks.map((w) => (
+              <div
+                key={w}
+                className={weekClass(w)}
+                title={`Week ${w + 1} · Age ${Math.floor(w / 52)}`}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
