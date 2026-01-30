@@ -1,30 +1,25 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Existence | Your Life in Real-Time',
-  description: 'A meditative visualization of your existence. Every second counts.',
-  openGraph: {
-    title: 'Existence',
-    description: 'Your life, visualized in real-time.',
-    type: 'website',
-  },
-}
+  title: 'EXISTENCE',
+  description: 'Your life, quantified.',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="gradient-orb gradient-orb-1" />
-        <div className="gradient-orb gradient-orb-2" />
-        <main className="relative z-10">
+        <div className="gradient-mesh" />
+        <div className="noise-overlay" />
+        <div className="relative z-10">
           {children}
-        </main>
+        </div>
       </body>
     </html>
-  )
+  );
 }
