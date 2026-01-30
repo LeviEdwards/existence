@@ -64,7 +64,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
 
   return (
     <div className="min-h-screen grid-pattern">
-      <div className="container py-12 md:py-20 space-y-8 lg:space-y-12">
+      <div className="container py-12 md:py-20 space-y-10 lg:space-y-14">
         
         {/* HEADER */}
         <header className="flex items-start justify-between animate-fadeInUp" style={{ animationDelay: '0ms' }}>
@@ -100,7 +100,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
         </section>
 
         {/* 3 STAT CARDS */}
-        <section className="animate-fadeInUp" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', animationDelay: '200ms' }}>
+        <section className="animate-fadeInUp" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', animationDelay: '200ms' }}>
           <div className="glass-card">
             <div className="w-12 h-12 rounded-xl bg-[rgba(217,119,6,0.1)] flex items-center justify-center mb-6">
               <Calendar className="w-6 h-6 text-[var(--primary)]" />

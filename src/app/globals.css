@@ -168,7 +168,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .life-label {
