@@ -24,19 +24,19 @@ export function LifeGrid({ weeks, total }: Props) {
   }, [total]);
 
   const cls = (n: number) => {
-    if (n < weeks) return 'week week-past';
+    if (n < weeks) return 'week week-lived';
     if (n === weeks) return 'week week-now';
     return 'week week-future';
   };
 
   return (
-    <div className="grid-container">
+    <div className="life-grid-wrap">
       {rows.map(({ year, weeks: w }) => (
-        <div key={year} className="grid-row">
-          <div className="grid-label">
+        <div key={year} className="life-row">
+          <div className="life-label">
             {year % 10 === 0 ? year : ''}
           </div>
-          <div className="grid-weeks">
+          <div className="life-weeks">
             {w.map((n) => (
               <div key={n} className={cls(n)} title={`Week ${n + 1} · Age ${Math.floor(n / 52)}`} />
             ))}
