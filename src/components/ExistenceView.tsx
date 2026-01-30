@@ -100,7 +100,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
         </section>
 
         {/* 3 STAT CARDS */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
+        <section className="grid grid-cols-3 gap-4 md:gap-6 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
           <div className="glass-card">
             <div className="w-12 h-12 rounded-xl bg-[rgba(217,119,6,0.1)] flex items-center justify-center mb-6">
               <Calendar className="w-6 h-6 text-[var(--primary)]" />
@@ -141,7 +141,7 @@ export function ExistenceView({ birthdate, onReset }: Props) {
         </section>
 
         {/* 2-COL: BODY + WITNESSED */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Body */}
           <div className="glass-card animate-fadeInUp" style={{ animationDelay: '400ms' }}>
             <div className="flex items-center gap-4 mb-6">
