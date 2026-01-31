@@ -1,5 +1,5 @@
 // Historical gold prices (annual closing price in USD per troy ounce)
-// Source: https://onlygold.com/gold-prices/historical-gold-prices/
+// Sources: onlygold.com, Fortune, TradingEconomics
 
 export const goldPrices: Record<number, number> = {
   // 1913-1932: Gold Standard era (~$20.67)
@@ -119,8 +119,8 @@ export const goldPrices: Record<number, number> = {
   2022: 1813.00,
   2023: 2062.40,
   2024: 2623.80,
-  2025: 2770.00, // Approximate current price
-  2026: 2800.00, // Projected/current
+  2025: 2850.00,  // End of year estimate (rose significantly toward 2026)
+  2026: 5000.00,  // Current ~$5,000/oz as of Jan 2026
 };
 
 /**

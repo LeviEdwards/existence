@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LifeGrid } from './LifeGrid';
 import { getGoldPrice, getCurrentGoldPrice, calculateGoldGrowth } from '@/data/goldPrices';
+import { getBitcoinPrice, getCurrentBitcoinPrice, calculateBitcoinGrowth, bitcoinExisted } from '@/data/bitcoinPrices';
 import { 
   Calendar, 
   Clock,
@@ -74,9 +75,12 @@ const listRowFirstStyle: React.CSSProperties = {
   paddingTop: 0,
 };
 
+type AssetType = 'gold' | 'bitcoin';
+
 export function ExistenceView({ birthdate, onReset }: Props) {
   const [now, setNow] = useState(new Date());
   const [ready, setReady] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<AssetType>('gold');
 
   useEffect(() => {
     setReady(true);
@@ -91,12 +95,20 @@ export function ExistenceView({ birthdate, onReset }: Props) {
     const years = ms / (365.25 * 24 * 60 * 60 * 1000);
     const total = LIFESPAN * 365.25 * 24 * 60 * 60 * 1000;
     
-    // Gold calculations
     const birthYear = birthdate.getFullYear();
+    
+    // Gold calculations
     const goldAtBirth = getGoldPrice(birthYear);
     const goldNow = getCurrentGoldPrice();
     const goldGrowthPct = ((goldNow - goldAtBirth) / goldAtBirth) * 100;
     const gold100Investment = calculateGoldGrowth(100, birthYear);
+    
+    // Bitcoin calculations (only if born after 2009)
+    const btcExists = bitcoinExisted(birthYear);
+    const btcAtBirth = btcExists ? getBitcoinPrice(birthYear) : null;
+    const btcNow = getCurrentBitcoinPrice();
+    const btcGrowthPct = btcAtBirth ? ((btcNow - btcAtBirth) / btcAtBirth) * 100 : null;
+    const btc100Investment = btcExists ? calculateBitcoinGrowth(100, birthYear) : null;
     
     return {
       secs: Math.floor(ms / 1000),
@@ -111,16 +123,54 @@ export function ExistenceView({ birthdate, onReset }: Props) {
       sun: days,
       moon: Math.floor(days / 29.53),
       season: Math.floor(years * 4),
+      birthYear,
       // Gold data
       goldAtBirth,
       goldNow,
       goldGrowthPct,
       gold100Investment,
-      birthYear,
+      // Bitcoin data
+      btcExists,
+      btcAtBirth,
+      btcNow,
+      btcGrowthPct,
+      btc100Investment,
     };
   }, [now, birthdate]);
 
   const f = (n: number) => n.toLocaleString();
+
+  // Get current asset data based on selection
+  const assetData = useMemo(() => {
+    if (selectedAsset === 'bitcoin') {
+      return {
+        name: 'Bitcoin',
+        symbol: '₿',
+        atBirth: d.btcAtBirth,
+        now: d.btcNow,
+        growthPct: d.btcGrowthPct,
+        investment100: d.btc100Investment,
+        available: d.btcExists,
+        color: '#F7931A', // Bitcoin orange
+        bgColor: 'rgba(247, 147, 26, 0.06)',
+        borderColor: 'rgba(247, 147, 26, 0.15)',
+        iconBgColor: 'rgba(247, 147, 26, 0.12)',
+      };
+    }
+    return {
+      name: 'Gold',
+      symbol: '$',
+      atBirth: d.goldAtBirth,
+      now: d.goldNow,
+      growthPct: d.goldGrowthPct,
+      investment100: d.gold100Investment,
+      available: true,
+      color: '#D97706', // Gold/amber
+      bgColor: 'rgba(217, 119, 6, 0.06)',
+      borderColor: 'rgba(217, 119, 6, 0.15)',
+      iconBgColor: 'rgba(217, 119, 6, 0.12)',
+    };
+  }, [selectedAsset, d]);
 
   if (!ready) return null;
 
@@ -290,72 +340,137 @@ export function ExistenceView({ birthdate, onReset }: Props) {
           </div>
         </section>
 
-        {/* GOLD SECTION */}
+        {/* ASSET SECTION (GOLD / BITCOIN TOGGLE) */}
         <section className="animate-fadeInUp" style={{ ...cardStyle, marginBottom: GAP, animationDelay: '550ms' }}>
-          <div style={sectionHeaderStyle}>
-            <div style={iconBoxStyle}>
-              <Coins style={{ width: '24px', height: '24px', color: '#D97706' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ ...iconBoxStyle, background: assetData.iconBgColor }}>
+                <Coins style={{ width: '24px', height: '24px', color: assetData.color }} />
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700, fontSize: '20px', color: '#FAFAFA' }}>
+                  {assetData.name} Over Your Lifetime
+                </h2>
+                <p style={{ color: '#78716C', fontSize: '14px', marginTop: '6px' }}>
+                  {selectedAsset === 'gold' ? 'Price per troy ounce (USD)' : 'Price per coin (USD)'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700, fontSize: '20px', color: '#FAFAFA' }}>Gold Over Your Lifetime</h2>
-              <p style={{ color: '#78716C', fontSize: '14px', marginTop: '6px' }}>
-                Price per troy ounce (USD)
-              </p>
+            
+            {/* Toggle */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '4px',
+              background: 'rgba(255, 255, 255, 0.04)',
+              borderRadius: '12px',
+              padding: '4px',
+            }}>
+              <button
+                onClick={() => setSelectedAsset('gold')}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: selectedAsset === 'gold' ? 'rgba(217, 119, 6, 0.2)' : 'transparent',
+                  color: selectedAsset === 'gold' ? '#D97706' : '#78716C',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Gold
+              </button>
+              <button
+                onClick={() => setSelectedAsset('bitcoin')}
+                disabled={!d.btcExists}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: selectedAsset === 'bitcoin' ? 'rgba(247, 147, 26, 0.2)' : 'transparent',
+                  color: !d.btcExists ? '#3f3f46' : selectedAsset === 'bitcoin' ? '#F7931A' : '#78716C',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: d.btcExists ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Bitcoin {!d.btcExists && '(2009+)'}
+              </button>
             </div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
+          {assetData.available && assetData.atBirth !== null ? (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
+                <div style={{ 
+                  padding: '24px',
+                  borderRadius: '16px',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.04)',
+                }}>
+                  <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>When you were born ({d.birthYear})</p>
+                  <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>
+                    ${assetData.atBirth < 1 ? assetData.atBirth.toFixed(4) : f(Math.round(assetData.atBirth))}
+                  </p>
+                </div>
+                <div style={{ 
+                  padding: '24px',
+                  borderRadius: '16px',
+                  background: assetData.bgColor,
+                  border: `1px solid ${assetData.borderColor}`,
+                }}>
+                  <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>Today</p>
+                  <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>${f(Math.round(assetData.now))}</p>
+                </div>
+              </div>
+              
+              <div style={{ 
+                padding: '20px 24px',
+                borderRadius: '12px',
+                background: assetData.growthPct && assetData.growthPct > 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                border: `1px solid ${assetData.growthPct && assetData.growthPct > 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+                <div>
+                  <p style={{ color: '#D4D4D8', fontSize: '15px' }}>
+                    If you&apos;d invested <span style={{ fontWeight: 700 }}>$100</span> in {assetData.name.toLowerCase()} at birth...
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p className="stat-number" style={{ 
+                    fontSize: '24px', 
+                    fontWeight: 700,
+                    color: assetData.growthPct && assetData.growthPct > 0 ? '#22C55E' : '#EF4444',
+                  }}>
+                    ${assetData.investment100 ? f(Math.round(assetData.investment100)) : '0'}
+                  </p>
+                  <p style={{ 
+                    fontSize: '13px', 
+                    color: assetData.growthPct && assetData.growthPct > 0 ? '#22C55E' : '#EF4444',
+                    fontWeight: 600,
+                  }}>
+                    {assetData.growthPct ? (assetData.growthPct > 0 ? '+' : '') + f(Math.round(assetData.growthPct)) + '%' : '0%'}
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
             <div style={{ 
-              padding: '24px',
+              padding: '40px',
               borderRadius: '16px',
               background: 'rgba(255, 255, 255, 0.02)',
               border: '1px solid rgba(255, 255, 255, 0.04)',
+              textAlign: 'center',
             }}>
-              <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>When you were born ({d.birthYear})</p>
-              <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>${d.goldAtBirth.toFixed(2)}</p>
-            </div>
-            <div style={{ 
-              padding: '24px',
-              borderRadius: '16px',
-              background: 'rgba(217, 119, 6, 0.06)',
-              border: '1px solid rgba(217, 119, 6, 0.15)',
-            }}>
-              <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>Today</p>
-              <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>${f(Math.round(d.goldNow))}</p>
-            </div>
-          </div>
-          
-          <div style={{ 
-            padding: '20px 24px',
-            borderRadius: '12px',
-            background: d.goldGrowthPct > 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-            border: `1px solid ${d.goldGrowthPct > 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <div>
-              <p style={{ color: '#D4D4D8', fontSize: '15px' }}>
-                If you&apos;d invested <span style={{ fontWeight: 700 }}>$100</span> in gold at birth...
+              <p style={{ color: '#78716C', fontSize: '16px' }}>
+                Bitcoin didn&apos;t exist when you were born. It was created in 2009.
               </p>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p className="stat-number" style={{ 
-                fontSize: '24px', 
-                fontWeight: 700,
-                color: d.goldGrowthPct > 0 ? '#22C55E' : '#EF4444',
-              }}>
-                ${f(Math.round(d.gold100Investment))}
-              </p>
-              <p style={{ 
-                fontSize: '13px', 
-                color: d.goldGrowthPct > 0 ? '#22C55E' : '#EF4444',
-                fontWeight: 600,
-              }}>
-                {d.goldGrowthPct > 0 ? '+' : ''}{d.goldGrowthPct.toFixed(0)}%
-              </p>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* LIFE GRID */}
