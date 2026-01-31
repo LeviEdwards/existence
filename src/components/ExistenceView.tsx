@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { LifeGrid } from './LifeGrid';
+import { getGoldPrice, getCurrentGoldPrice, calculateGoldGrowth } from '@/data/goldPrices';
 import { 
   Calendar, 
   Clock,
@@ -15,7 +16,8 @@ import {
   TreeDeciduous,
   Settings2,
   LayoutGrid,
-  Radio
+  Radio,
+  Coins
 } from 'lucide-react';
 
 interface Props {
@@ -89,6 +91,13 @@ export function ExistenceView({ birthdate, onReset }: Props) {
     const years = ms / (365.25 * 24 * 60 * 60 * 1000);
     const total = LIFESPAN * 365.25 * 24 * 60 * 60 * 1000;
     
+    // Gold calculations
+    const birthYear = birthdate.getFullYear();
+    const goldAtBirth = getGoldPrice(birthYear);
+    const goldNow = getCurrentGoldPrice();
+    const goldGrowthPct = ((goldNow - goldAtBirth) / goldAtBirth) * 100;
+    const gold100Investment = calculateGoldGrowth(100, birthYear);
+    
     return {
       secs: Math.floor(ms / 1000),
       days,
@@ -102,6 +111,12 @@ export function ExistenceView({ birthdate, onReset }: Props) {
       sun: days,
       moon: Math.floor(days / 29.53),
       season: Math.floor(years * 4),
+      // Gold data
+      goldAtBirth,
+      goldNow,
+      goldGrowthPct,
+      gold100Investment,
+      birthYear,
     };
   }, [now, birthdate]);
 
@@ -272,6 +287,74 @@ export function ExistenceView({ birthdate, onReset }: Props) {
                 <span style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700, fontSize: '17px', color: '#FAFAFA' }}>{value}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* GOLD SECTION */}
+        <section className="animate-fadeInUp" style={{ ...cardStyle, marginBottom: GAP, animationDelay: '550ms' }}>
+          <div style={sectionHeaderStyle}>
+            <div style={iconBoxStyle}>
+              <Coins style={{ width: '24px', height: '24px', color: '#D97706' }} />
+            </div>
+            <div>
+              <h2 style={{ fontFamily: 'Plus Jakarta Sans', fontWeight: 700, fontSize: '20px', color: '#FAFAFA' }}>Gold Over Your Lifetime</h2>
+              <p style={{ color: '#78716C', fontSize: '14px', marginTop: '6px' }}>
+                Price per troy ounce (USD)
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
+            <div style={{ 
+              padding: '24px',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.04)',
+            }}>
+              <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>When you were born ({d.birthYear})</p>
+              <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>${d.goldAtBirth.toFixed(2)}</p>
+            </div>
+            <div style={{ 
+              padding: '24px',
+              borderRadius: '16px',
+              background: 'rgba(217, 119, 6, 0.06)',
+              border: '1px solid rgba(217, 119, 6, 0.15)',
+            }}>
+              <p style={{ color: '#78716C', fontSize: '14px', marginBottom: '8px' }}>Today</p>
+              <p className="stat-number" style={{ fontSize: '28px', fontWeight: 700 }}>${f(Math.round(d.goldNow))}</p>
+            </div>
+          </div>
+          
+          <div style={{ 
+            padding: '20px 24px',
+            borderRadius: '12px',
+            background: d.goldGrowthPct > 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+            border: `1px solid ${d.goldGrowthPct > 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+            <div>
+              <p style={{ color: '#D4D4D8', fontSize: '15px' }}>
+                If you&apos;d invested <span style={{ fontWeight: 700 }}>$100</span> in gold at birth...
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p className="stat-number" style={{ 
+                fontSize: '24px', 
+                fontWeight: 700,
+                color: d.goldGrowthPct > 0 ? '#22C55E' : '#EF4444',
+              }}>
+                ${f(Math.round(d.gold100Investment))}
+              </p>
+              <p style={{ 
+                fontSize: '13px', 
+                color: d.goldGrowthPct > 0 ? '#22C55E' : '#EF4444',
+                fontWeight: 600,
+              }}>
+                {d.goldGrowthPct > 0 ? '+' : ''}{d.goldGrowthPct.toFixed(0)}%
+              </p>
+            </div>
           </div>
         </section>
 
